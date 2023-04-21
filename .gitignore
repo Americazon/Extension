@@ -1,0 +1,9 @@
+node_modules/
+
+dist/
+
+.DS_Store/
+
+wasm_bindgen_example/target/
+wasm_bindgen_example/pkg/
+wasm_build/

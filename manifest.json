@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "Americazon.shop",
+  "description": "The mission is to give consumer transparency about the Country of Origin of products on Amazon.",
+  "version": "0.0.4.2",
+  "minimum_chrome_version": "93",
+  "background": {
+    "service_worker": "background.js",
+    "wasm": [ "wasm_bindgen_example_bg.wasm" ]
+  },
+  "icons": {
+    "16": "America16.png",
+    "64": "America64.png",
+    "128": "America128.png"
+  },
+  "host_permissions": [
+    "https://*.amazon.com/*"
+  ],
+  "permissions": [
+    "scripting",
+    "tabs"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [ "America128.png", "wasm_bindgen_example_bg.wasm", "wasm_bindgen_example.js"],
+      "matches": [ "https://*.amazon.com/*" ]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_security_policy": { 
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';" 
+  }
+}

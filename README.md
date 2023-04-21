@@ -1,0 +1,1 @@
+# Load extension from the dist folder

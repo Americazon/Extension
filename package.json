@@ -1,0 +1,28 @@
+{
+  "name": "extension",
+  "version": "1.0.0",
+  "description": "The mission is to give more consumer transparency about where products on Amazon are made.",
+  "main": "index.js",
+  "scripts": {
+    "build:dev": "webpack --config webpack.config.js --mode development && cp manifest.json ./dist/manifest.json && cp -a ./assets/. ./dist/ && cp ./src/popup.html ./dist/popup.html",
+    "build:prod": "webpack --config webpack.config.js --mode production && cp manifest.json ./dist/manifest.json && cp -a ./assets/. ./dist/ && cp ./src/popup.html ./dist/popup.html"
+  },
+  "author": "Austin Blanchard",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.21.4",
+    "@babel/preset-env": "^7.21.4",
+    "@swc/core": "^1.3.40",
+    "babel-loader": "^9.1.2",
+    "path-browserify": "^1.0.1",
+    "terser-webpack-plugin": "^5.3.7",
+    "util": "^0.12.5",
+    "wasm-loader": "^1.3.0",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1"
+  },
+  "dependencies": {
+    "@xmldom/xmldom": "^0.8.6",
+    "xpath": "^0.0.32"
+  }
+}
