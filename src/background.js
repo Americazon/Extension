@@ -1,13 +1,9 @@
 import xpath from 'xpath'
 import { DOMParser } from '@xmldom/xmldom';
-// import * as wasmJsBg from '../wasm_bindgen_example/pkg/wasm_bindgen_example_bg';
-// import * as wasmJs from '../wasm_bindgen_example/pkg/wasm_bindgen_example';
-import * as wasm from '../wasm_bindgen_example/pkg/wasm_bindgen_example.wasm';
 
 let currURL = ''
 
 const fetchASIN = async (asins) => {
-  console.log(wasm)
 
   if (!asins.length) return;
 
