@@ -5,8 +5,7 @@
   "version": "0.0.4.2",
   "minimum_chrome_version": "93",
   "background": {
-    "service_worker": "background.js",
-    "wasm": [ "wasm_bindgen_example_bg.wasm" ]
+    "service_worker": "background.js"
   },
   "icons": {
     "16": "America16.png",
@@ -28,8 +27,5 @@
   ],
   "action": {
     "default_popup": "popup.html"
-  },
-  "content_security_policy": { 
-    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';" 
   }
 }
