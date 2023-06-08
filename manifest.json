@@ -21,7 +21,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": [ "America128.png", "wasm_bindgen_example_bg.wasm", "wasm_bindgen_example.js"],
+      "resources": [ "America128.png" ],
       "matches": [ "https://*.amazon.com/*" ]
     }
   ],
