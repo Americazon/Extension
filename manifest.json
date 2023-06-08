@@ -13,7 +13,24 @@
     "128": "America128.png"
   },
   "host_permissions": [
-    "https://*.amazon.com/*"
+    "https://*.amazon.com/*",
+    "https://*.amazon.ca/*", 
+    "https://*.amazon.co.uk/*", 
+    "https://*.amazon.de/*", 
+    "https://*.amazon.fr/*", 
+    "https://*.amazon.es/*", 
+    "https://*.amazon.it/*", 
+    "https://*.amazon.nl/*", 
+    "https://*.amazon.co.jp/*", 
+    "https://*.amazon.in/*", 
+    "https://*.amazon.com.au/*", 
+    "https://*.amazon.com.mx/*", 
+    "https://*.amazon.com.br/*", 
+    "https://*.amazon.cn/*", 
+    "https://*.amazon.com.tr/*", 
+    "https://*.amazon.ae/*", 
+    "https://*.amazon.sa/*", 
+    "https://*.amazon.sg/*"
   ],
   "permissions": [
     "scripting",
