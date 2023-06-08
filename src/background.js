@@ -59,8 +59,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (URL_REGEX.test(url) && 
     changeInfo.status === 'complete' && 
     status === 'complete' && 
-    active && 
-    currURL != url)
+    active /* && currURL != url */)
   {
     currURL = url
     chrome.scripting.executeScript({
