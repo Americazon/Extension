@@ -3,6 +3,7 @@ import { DOMParser } from '@xmldom/xmldom';
 
 let currURL = ''
 const URL_REGEX = /https:\/\/.*amazon(?:\.com|\.ca|\.co\.uk|\.de|\.fr|\.it|\.es|\.nl\.co\.jp|\.in|\.com\.au|\.com\.mx|\.br|\.cn|\.com\.tr|\.ae|\.sa|\.sg)\/(?:s|b|gp).*/
+const DOMAIN_COUNTRY_REGEX = /(\.com|\.ca|\.co\.uk|\.de|\.fr|\.it|\.es|\.nl\.co\.jp|\.in|\.com\.au|\.com\.mx|\.br|\.cn|\.com\.tr|\.ae|\.sa|\.sg)/
 
 const fetchASIN = async (asins) => {
 
@@ -19,8 +20,10 @@ const fetchASIN = async (asins) => {
   }})
   const parseCOO = (html) => filterCOO(xpath.select1(COO_XPATH, dom_parser.parseFromString(html, "text/html"))?.firstChild?.data || '')
 
+  const [ countryURL ] = (new URL(currURL).hostname).match(DOMAIN_COUNTRY_REGEX)
+
   // get the asin URLs
-  const asinURLS = asins.map(asin => `https://www.amazon.com/dp/${asin}`)
+  const asinURLS = asins.map(asin => `https://www.amazon${countryURL}/dp/${asin}`)
 
   // resolve them to text
   const productsHTML = await Promise.all(
