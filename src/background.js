@@ -49,9 +49,16 @@ chrome.runtime.onMessage.addListener(
 );
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+
   const { status, active, url } = tab
-  if (/https:\/\/.*amazon.com\/(?:s|b|gp).*/.test(url) && changeInfo.status === 'complete' && status === 'complete' && active && currURL != url) {
-    currURL = url;
+
+  if (/https:\/\/.*amazon(?:\.com|\.ca|\.co\.uk|\.de|\.fr|\.it|\.es|\.nl\.co\.jp|\.in|\.com\.au|\.com\.mx|\.br|\.cn|\.com\.tr|\.ae|\.sa|\.sg)\/(?:s|b|gp).*/.test(url) && 
+    changeInfo.status === 'complete' && 
+    status === 'complete' && 
+    active && 
+    currURL != url)
+  {
+    currURL = url
     chrome.scripting.executeScript({
       target: { tabId },
       files: ["content-bundle.js"]
