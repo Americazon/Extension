@@ -2,6 +2,7 @@ import xpath from 'xpath'
 import { DOMParser } from '@xmldom/xmldom';
 
 let currURL = ''
+const URL_REGEX = /https:\/\/.*amazon(?:\.com|\.ca|\.co\.uk|\.de|\.fr|\.it|\.es|\.nl\.co\.jp|\.in|\.com\.au|\.com\.mx|\.br|\.cn|\.com\.tr|\.ae|\.sa|\.sg)\/(?:s|b|gp).*/
 
 const fetchASIN = async (asins) => {
 
@@ -52,7 +53,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
   const { status, active, url } = tab
 
-  if (/https:\/\/.*amazon(?:\.com|\.ca|\.co\.uk|\.de|\.fr|\.it|\.es|\.nl\.co\.jp|\.in|\.com\.au|\.com\.mx|\.br|\.cn|\.com\.tr|\.ae|\.sa|\.sg)\/(?:s|b|gp).*/.test(url) && 
+  if (URL_REGEX.test(url) && 
     changeInfo.status === 'complete' && 
     status === 'complete' && 
     active && 
