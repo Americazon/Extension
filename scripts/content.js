@@ -61,7 +61,7 @@ async function getCOO() {
     .filter(asinFilt => /^(?:\d{10}|[A-Z]{10}|[\dA-Z]{10})$/.test(asinFilt)))
   ]
 
-  console.log('fetching products')
+  console.log('fetching products...')
 
   // create the loading div
   let loadingDiv = await createLoadingElem()
@@ -99,7 +99,5 @@ async function getCOO() {
 }
 
 setTimeout(function() {
-  if (document.readyState === "complete") {
-    getCOO();
-  }
+  if (document.readyState === "complete") getCOO();
 }, 2000)

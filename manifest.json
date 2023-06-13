@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Americazon.shop",
   "description": "The mission is to give consumer transparency about the Country of Origin of products on Amazon.",
-  "version": "0.0.4.3",
+  "version": "0.0.4.4",
   "minimum_chrome_version": "93",
   "background": {
     "service_worker": "background.js"
