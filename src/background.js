@@ -45,6 +45,7 @@ const fetchASIN = async (asins) => {
 
 }
 
+// listener to fetch products from content script when message received
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.asins) fetchASIN(request.asins).then(res => sendResponse(res))
@@ -52,6 +53,7 @@ chrome.runtime.onMessage.addListener(
   }
 );
 
+// executes content script whenever tab is updated
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
   const { status, active, url } = tab

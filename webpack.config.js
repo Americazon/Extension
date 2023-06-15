@@ -4,7 +4,8 @@ const TerserPlugin = require('terser-webpack-plugin');
 module.exports = {
   entry: {
     "content-bundle": './src/content-bundle.js',
-    background: './src/background.js'
+    background: './src/background.js',
+    popup: './src/popup.js'
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
