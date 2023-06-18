@@ -3,6 +3,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
     let elem = document.getElementById("result");
   
-    elem.innerText = JSON.stringify(message.result, undefined, 2);
+    elem.textContent = JSON.stringify(message.result, undefined, 2);
   }
 });

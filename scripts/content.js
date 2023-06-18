@@ -70,10 +70,10 @@ async function getCOO() {
   // show cached products first
   let cacheResult = {}
   const asinCache = asins.filter(asin => {
-    const cacheRes = JSON.parse(sessionStorage.getItem(asin))
+    const cacheRes = sessionStorage.getItem(asin)
     
     if (cacheRes !== null) {
-      cacheResult[asin] = cacheRes
+      cacheResult[asin] = JSON.parse(cacheRes)
       return true
     }
     
