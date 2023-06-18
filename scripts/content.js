@@ -4,7 +4,7 @@ async function addToPage(asins, result={}) {
     let productElem = document.querySelector(`[data-asin='${asins[i]}']`)
     if (productElem) {
       let div = document.createElement('div');
-      div.textContent = `Country of Origin: ${result[asins[i]] || "Unknown"}`
+      div.textContent = `Country of Origin: ${result[asins[i]]?.COO || "Unknown"}`
 
       div.style.color = "black"
       div.style.padding = "2px"
@@ -70,7 +70,7 @@ async function getCOO() {
   // show cached products first
   let cacheResult = {}
   const asinCache = asins.filter(asin => {
-    const cacheRes = sessionStorage.getItem(asin)
+    const cacheRes = JSON.parse(sessionStorage.getItem(asin))
     
     if (cacheRes !== null) {
       cacheResult[asin] = cacheRes
@@ -84,10 +84,12 @@ async function getCOO() {
   // fetch non cached products
   const asinFetch = asins.filter(asin => sessionStorage.getItem(asin) === null)
   const result = await chrome.runtime.sendMessage({ asins: asinFetch })
-  chrome.runtime.sendMessage({ result })
 
   // add to page of fetched results
   addToPage(asinFetch, result)
+
+  // send result to the popup UI
+  chrome.runtime.sendMessage({ result })
 
   // remove loading div
   loadingDiv.remove();
@@ -95,7 +97,7 @@ async function getCOO() {
   console.log('product fetching done...')
 
   // persist to local cache
-  if (result) Object.entries(result).forEach(([asin, COO]) => sessionStorage.setItem(asin, COO))
+  if (result) Object.entries(result).forEach(([asin, COO]) => sessionStorage.setItem(asin, JSON.stringify(COO)))
 
 }
 

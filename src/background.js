@@ -9,8 +9,15 @@ const fetchASIN = async (asins) => {
 
   if (!asins.length) return;
 
+  // XPATHs
   const COO_XPATH = "//*[contains(text(), 'Country of Origin') or contains(text(), 'Country/Region of origin')]//following-sibling::*"
-  const filterCOO = (str) => str.replace('\n', '').replace('&lrm;', '').trim()
+  const PRODUCTNAME_XPATH = "//*[@id='productTitle']"
+  const IMAGE_XPATH = "//*[@id='landingImage']"
+
+  // filter HTML to be just the string from scraping
+  const filterHTML = (str) => str.replace('\n', '').replace('&lrm;', '').trim()
+  
+  // define XPATH Parser
   const dom_parser = new DOMParser({
     locator: {},
     errorHandler: {
@@ -18,8 +25,15 @@ const fetchASIN = async (asins) => {
       error: function (e) {},
       fatalError: function (e) { console.error(e) },
   }})
-  const parseCOO = (html) => filterCOO(xpath.select1(COO_XPATH, dom_parser.parseFromString(html, "text/html"))?.firstChild?.data || '')
 
+  // parse a product page
+  const parseHTML = (html) => ({ 
+      COO: filterHTML(xpath.select1(COO_XPATH, dom_parser.parseFromString(html, "text/html"))?.firstChild?.data || ''),
+      productName: filterHTML(xpath.select1(PRODUCTNAME_XPATH, dom_parser.parseFromString(html, "text/html"))?.firstChild?.data || ''),
+      productImage: xpath.select1(IMAGE_XPATH, dom_parser.parseFromString(html, "text/html"))?.attributes[1]?.nodeValue || ''
+  })
+
+  // get country url for international support
   const [ countryURL ] = (new URL(currURL).hostname).match(DOMAIN_COUNTRY_REGEX)
 
   // get the asin URLs
@@ -32,12 +46,12 @@ const fetchASIN = async (asins) => {
       .map((res) => res.text()))
   
   // parse productsHTML pages to get necessary data ie: COO
-  const productCOO = productsHTML.map(parseCOO)
+  const productCOO = productsHTML.map(parseHTML)
 
   // create the result 
   const result = {}
   for (let i = 0; i < asins.length; i++) {
-    result[asins[i]] = productCOO[i] || ""
+    result[asins[i]] = productCOO[i] || {}
   }
 
   // send response back to the content script
