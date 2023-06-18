@@ -1,10 +1,9 @@
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+  if (message.result) {
 
-  console.log("FROM POPUP: " + JSON.stringify(request.data, undefined, 2));
+    let elem = document.getElementById("result");
   
-  let elem = document.createElement('div')
-
-  elem.textContent = JSON.stringify(request.data, undefined, 2);
-
-  document.firstElementChild.appendChild(elem)
+    elem.innerText = JSON.stringify(message.result, undefined, 2);
+    alert(message.result)
+  }
 });

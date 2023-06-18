@@ -84,6 +84,7 @@ async function getCOO() {
   // fetch non cached products
   const asinFetch = asins.filter(asin => sessionStorage.getItem(asin) === null)
   const result = await chrome.runtime.sendMessage({ asins: asinFetch })
+  chrome.runtime.sendMessage({ result })
 
   // add to page of fetched results
   addToPage(asinFetch, result)
