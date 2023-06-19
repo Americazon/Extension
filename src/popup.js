@@ -14,8 +14,11 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       let cooElem = document.createElement("h3")
       let imageElem = document.createElement("img")
 
-      titeElem.innerText = productData?.productName || ""
-      cooElem.innerText = productData?.COO || ""
+      let productTitle = productData?.productName || ""
+      productTitle = productTitle.length > 50 ? `${productTitle.substring(0, 50).trim()}...` : productTitle
+
+      titeElem.innerText = productTitle || ""
+      cooElem.innerText = `COO: ${productData?.COO || ""}`
       imageElem.src = productData?.productImage || ""
       
       // create title
@@ -25,6 +28,8 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
       // append list item
       listDiv.appendChild(itemDiv)
+      listDiv.style.border = "2px"
+      listDiv.style.borderColor = "black"
     })
 
     elem.appendChild(listDiv);
