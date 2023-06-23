@@ -97,7 +97,12 @@ async function getCOO() {
   console.log('product fetching done...')
 
   // persist to local cache
-  if (result) Object.entries(result).forEach(([asin, COO]) => sessionStorage.setItem(asin, JSON.stringify(COO)))
+  if (result) Object.entries(result).forEach(([asin, product]) => {
+    sessionStorage.setItem(asin, JSON.stringify(product))
+    // TODO: add to database
+  })
+
+
 
 }
 
