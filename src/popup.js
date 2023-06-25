@@ -12,7 +12,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
       let itemDiv = document.createElement("div")
 
-      let titeElem = document.createElement("h1")
+      let titeElem = document.createElement("h2")
       let cooElem = document.createElement("h3")
       let imageElem = document.createElement("img")
 
@@ -32,7 +32,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       itemDiv.appendChild(imageElem)
       itemDiv.appendChild(titeElem)
       itemDiv.appendChild(cooElem)
-
 
 
       itemDiv.style.marginBottom = "50px"
