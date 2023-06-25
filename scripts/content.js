@@ -4,7 +4,7 @@ async function addToPage(asins, result={}) {
     let productElem = document.querySelector(`[data-asin='${asins[i]}']`)
     if (productElem) {
       let div = document.createElement('div');
-      div.textContent = `Country of Origin: ${result[asins[i]]?.COO || "Unknown"}`
+      div.textContent = `Country of Origin: ${result[asins[i]]?.countryoforigin || "Unknown"}`
 
       div.style.color = "black"
       div.style.padding = "2px"
@@ -95,6 +95,8 @@ async function getCOO() {
   loadingDiv.remove();
 
   console.log('product fetching done...')
+
+  console.log(result);
 
   // persist to local cache
   if (result) Object.entries(result).forEach(([asin, product]) => {

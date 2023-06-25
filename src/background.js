@@ -10,10 +10,7 @@ const DOMAIN_COUNTRY_REGEX = /(\.com\.tr|\.com\.mx|\.com\.au|\.com|\.ca|\.co\.uk
 const COO_XPATH = "//*[contains(text(), 'Country of Origin') or contains(text(), 'Country/Region of origin')]//following-sibling::*"
 const PRODUCTNAME_XPATH = "//*[@id='productTitle']"
 const IMAGE_XPATH = "//*[@id='landingImage']"
-const MANUFACTURER_XPATH = "//*[not(contains(text(), 'Recommended')) and not(contains(text(), "
-                            "'recommended')) and not(contains(text(), 'discontinued')) and not(contains("
-                            "text(), 'Discontinued')) and contains(text(), "
-                            "'Manufacturer')]//following-sibling::*"
+const MANUFACTURER_XPATH = "//*[not(contains(text(), 'Recommended')) and not(contains(text(), 'recommended')) and not(contains(text(), 'discontinued')) and not(contains(text(), 'Discontinued')) and contains(text(), 'Manufacturer')]//following-sibling::*"
 const DEPARTMENT_XPATH = "//*[contains(text(), 'Department') or contains(text(), 'department')]//following-sibling::*"
 
 // define XPATH Parser
