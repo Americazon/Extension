@@ -4,7 +4,7 @@ async function addToPage(asins, result={}) {
     let productElem = document.querySelector(`[data-asin='${asins[i]}']`)
     if (productElem) {
       let div = document.createElement('div');
-      div.textContent = `Country of Origin: ${result[asins[i]]?.COO || "Unknown"}`
+      div.textContent = `Country of Origin: ${result[asins[i]]?.countryoforigin || "Unknown"}`
 
       div.style.color = "black"
       div.style.padding = "2px"
@@ -96,8 +96,15 @@ async function getCOO() {
 
   console.log('product fetching done...')
 
+  console.log(result);
+
   // persist to local cache
-  if (result) Object.entries(result).forEach(([asin, COO]) => sessionStorage.setItem(asin, JSON.stringify(COO)))
+  if (result) Object.entries(result).forEach(([asin, product]) => {
+    sessionStorage.setItem(asin, JSON.stringify(product))
+    // TODO: add to database
+  })
+
+
 
 }
 

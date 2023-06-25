@@ -1,37 +1,42 @@
 import xpath from 'xpath'
 import { DOMParser } from '@xmldom/xmldom';
 
+// FOR INTERNATIONAL SUPPORT OF DIFFERENT AMAZON URLs
 let currURL = ''
 const URL_REGEX = /https:\/\/.*amazon(?:\.com|\.ca|\.co\.uk|\.de|\.fr|\.it|\.es|\.nl\.co\.jp|\.in|\.com\.au|\.com\.mx|\.br|\.cn|\.com\.tr|\.ae|\.sa|\.sg)\/(?:s|b|gp).*/
 const DOMAIN_COUNTRY_REGEX = /(\.com\.tr|\.com\.mx|\.com\.au|\.com|\.ca|\.co\.uk|\.de|\.fr|\.it|\.es|\.nl|\.co\.jp|\.in|\.br|\.cn|\.ae|\.sa|\.sg)/
 
+// XPATHs
+const COO_XPATH = "//*[contains(text(), 'Country of Origin') or contains(text(), 'Country/Region of origin')]//following-sibling::*"
+const PRODUCTNAME_XPATH = "//*[@id='productTitle']"
+const IMAGE_XPATH = "//*[@id='landingImage']"
+const MANUFACTURER_XPATH = "//*[not(contains(text(), 'Recommended')) and not(contains(text(), 'recommended')) and not(contains(text(), 'discontinued')) and not(contains(text(), 'Discontinued')) and contains(text(), 'Manufacturer')]//following-sibling::*"
+const DEPARTMENT_XPATH = "//*[contains(text(), 'Department') or contains(text(), 'department')]//following-sibling::*"
+
+// define XPATH Parser
+const dom_parser = new DOMParser({
+  locator: {},
+  errorHandler: {
+    warning: function (w) {},
+    error: function (e) {},
+    fatalError: function (e) { console.error(e) },
+}})
+
+// filter HTML to be just the string from scraping
+const filterHTML = (str) => str.replace('\n', '').replace('&lrm;', '').trim()
+
+// parse a product page
+const parseHTML = (html) => ({ 
+    productname: filterHTML(xpath.select1(PRODUCTNAME_XPATH, dom_parser.parseFromString(html, "text/html"))?.firstChild?.data || ''),
+    countryoforigin: filterHTML(xpath.select1(COO_XPATH, dom_parser.parseFromString(html, "text/html"))?.firstChild?.data || ''),
+    productImage: filterHTML(xpath.select1(IMAGE_XPATH, dom_parser.parseFromString(html, "text/html"))?.attributes[1]?.nodeValue || ''),
+    department: filterHTML(xpath.select1(DEPARTMENT_XPATH, dom_parser.parseFromString(html, "text/html"))?.firstChild?.data ||  ''),
+    manufacturer: filterHTML(xpath.select1(MANUFACTURER_XPATH, dom_parser.parseFromString(html, "text/html"))?.firstChild?.data ||  '')
+})
+
 const fetchASIN = async (asins) => {
 
   if (!asins.length) return;
-
-  // XPATHs
-  const COO_XPATH = "//*[contains(text(), 'Country of Origin') or contains(text(), 'Country/Region of origin')]//following-sibling::*"
-  const PRODUCTNAME_XPATH = "//*[@id='productTitle']"
-  const IMAGE_XPATH = "//*[@id='landingImage']"
-
-  // filter HTML to be just the string from scraping
-  const filterHTML = (str) => str.replace('\n', '').replace('&lrm;', '').trim()
-  
-  // define XPATH Parser
-  const dom_parser = new DOMParser({
-    locator: {},
-    errorHandler: {
-      warning: function (w) {},
-      error: function (e) {},
-      fatalError: function (e) { console.error(e) },
-  }})
-
-  // parse a product page
-  const parseHTML = (html) => ({ 
-      COO: filterHTML(xpath.select1(COO_XPATH, dom_parser.parseFromString(html, "text/html"))?.firstChild?.data || ''),
-      productName: filterHTML(xpath.select1(PRODUCTNAME_XPATH, dom_parser.parseFromString(html, "text/html"))?.firstChild?.data || ''),
-      productImage: xpath.select1(IMAGE_XPATH, dom_parser.parseFromString(html, "text/html"))?.attributes[1]?.nodeValue || ''
-  })
 
   // get country url for international support
   const [ countryURL ] = (new URL(currURL).hostname).match(DOMAIN_COUNTRY_REGEX)
@@ -51,6 +56,7 @@ const fetchASIN = async (asins) => {
   // create the result 
   const result = {}
   for (let i = 0; i < asins.length; i++) {
+    productCOO[i]["ASIN"] = asins[i]
     result[asins[i]] = productCOO[i] || {}
   }
 
