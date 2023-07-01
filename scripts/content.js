@@ -85,28 +85,24 @@ async function getCOO() {
 
   // fetch non cached products
   const asinFetch = asins.filter(asin => sessionStorage.getItem(asin) === null)
-  const result = await chrome.runtime.sendMessage({ asins: asinFetch })
+  const fetchResult = await chrome.runtime.sendMessage({ asins: asinFetch })
 
   // add to page of fetched results
-  addToPage(asinFetch, result)
+  addToPage(asinFetch, fetchResult)
 
   // send result to the popup UI
-  chrome.runtime.sendMessage({ result })
+  chrome.runtime.sendMessage({ result: { ...fetchResult, ...cacheResult }})
 
   // remove loading div
   loadingDiv.remove();
 
   console.log('product fetching done...')
 
-  console.log(result);
-
   // persist to local cache
-  if (result) Object.entries(result).forEach(([asin, product]) => {
+  if (fetchResult) Object.entries(fetchResult).forEach(([asin, product]) => {
     sessionStorage.setItem(asin, JSON.stringify(product))
     // TODO: add to database
   })
-
-
 
 }
 
