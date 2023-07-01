@@ -1,3 +1,5 @@
+const ASIN_REGEX = /^(?:\d{10}|[A-Z]{10}|[\dA-Z]{10})$/
+
 async function addToPage(asins, result={}) {
   // add COO to the UI
   for (let i = 0; i < asins.length; i++) {
@@ -58,7 +60,7 @@ async function getCOO() {
     ...new Set(Array.from(document.querySelectorAll("[data-asin]"))
     .map(asin => asin.attributes[0])
     .map(asinData => asinData?.value || "")
-    .filter(asinFilt => /^(?:\d{10}|[A-Z]{10}|[\dA-Z]{10})$/.test(asinFilt)))
+    .filter(asinFilt => ASIN_REGEX.test(asinFilt)))
   ]
 
   console.log('fetching products...')
