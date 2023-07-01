@@ -6,7 +6,7 @@ async function addToPage(asins, result={}) {
     let productElem = document.querySelector(`[data-asin='${asins[i]}']`)
     if (productElem) {
       let div = document.createElement('div');
-      div.textContent = `Country of Origin: ${result[asins[i]]?.countryoforigin || "Unknown"}`
+      div.textContent = `Country of Origin: ${result[asins[i]]?.countryOfOrigin || "Unknown"}`
 
       div.style.color = "black"
       div.style.padding = "2px"
