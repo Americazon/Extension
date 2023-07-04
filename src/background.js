@@ -23,7 +23,7 @@ const dom_parser = new DOMParser({
 }})
 
 // filter HTML to be just the string from scraping
-const filterHTML = (str) => str.replace('\n', '').replace('&lrm;', '').trim()
+const filterHTML = (str) => str.replace('\n', '').replace('&lrm;', '').replace(/[^\x00-\x7F]/g, "").trim()
 
 // parse a product page
 const parseHTML = (html) => ({ 
@@ -68,7 +68,18 @@ const fetchASIN = async (asins) => {
 // listener to fetch products from content script when message received
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    if (request.asins) fetchASIN(request.asins).then(res => sendResponse(res))
+    if (request.asins) fetchASIN(request.asins).then(res => {
+      sendResponse(res)
+      fetch("https://us-central1-americazon-extension.cloudfunctions.net/addProducts", {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': '*/*'
+        },
+        body: JSON.stringify(Object.values(res))
+      })
+    })
     return true;
   }
 );
