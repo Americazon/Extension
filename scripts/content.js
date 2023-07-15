@@ -55,6 +55,7 @@ async function createLoadingElem() {
 }
 
 async function getCOO() {
+  
   // get all asins from the page
   const asins = [
     ...new Set(Array.from(document.querySelectorAll("[data-asin]"))
@@ -99,9 +100,14 @@ async function getCOO() {
   console.log('product fetching done...')
 
   // persist to local cache
-  if (fetchResult) Object.entries(fetchResult).forEach(
-    ([asin, product]) => sessionStorage.setItem(asin, JSON.stringify(product))
-  )
+  if (fetchResult) {
+    Object.entries(fetchResult).forEach(
+      ([asin, product]) => sessionStorage.setItem(asin, JSON.stringify(product))
+    )
+
+    // create a background fetch event
+    chrome.runtime.sendMessage({ backgroundFetch: fetchResult })
+  }
 
 }
 

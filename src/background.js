@@ -65,21 +65,24 @@ const fetchASIN = async (asins) => {
 
 }
 
+const backgroundPostProducts = (products) => fetch("https://us-central1-americazon-extension.cloudfunctions.net/addProducts", {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Content-Type': 'application/json',
+      'Accept': '*/*'
+    },
+    body: JSON.stringify(Object.values(products))
+  })
+
 // listener to fetch products from content script when message received
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    if (request.asins) fetchASIN(request.asins).then(res => {
-      sendResponse(res)
-      fetch("https://us-central1-americazon-extension.cloudfunctions.net/addProducts", {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': '*/*'
-        },
-        body: JSON.stringify(Object.values(res))
-      })
-    })
+    if (request.asins)
+      fetchASIN(request.asins).then(res => sendResponse(res))
+    else if (request.backgroundFetch)
+      backgroundPostProducts(request.backgroundFetch).then(res => sendResponse(res))
     return true;
   }
 );
