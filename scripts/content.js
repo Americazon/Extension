@@ -99,7 +99,7 @@ async function getCOO() {
 
   console.log('product fetching done...')
 
-  // persist to local cache
+  // persist to local cache and background fetch event
   if (fetchResult) {
     Object.entries(fetchResult).forEach(
       ([asin, product]) => sessionStorage.setItem(asin, JSON.stringify(product))
