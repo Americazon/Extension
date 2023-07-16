@@ -92,7 +92,7 @@ async function getCOO() {
   addToPage(asinFetch, fetchResult)
 
   // send result to the popup UI
-  chrome.runtime.sendMessage({ result: { ...fetchResult, ...cacheResult }})
+  // chrome.runtime.sendMessage({ result: { ...fetchResult, ...cacheResult }})
 
   // remove loading div
   loadingDiv.remove();
