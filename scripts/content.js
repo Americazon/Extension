@@ -1,10 +1,12 @@
+const ASIN_REGEX = /^(?:\d{10}|[A-Z]{10}|[\dA-Z]{10})$/
+
 async function addToPage(asins, result={}) {
   // add COO to the UI
   for (let i = 0; i < asins.length; i++) {
     let productElem = document.querySelector(`[data-asin='${asins[i]}']`)
     if (productElem) {
       let div = document.createElement('div');
-      div.textContent = `Country of Origin: ${result[asins[i]] || "Unknown"}`
+      div.textContent = `Country of Origin: ${result[asins[i]]?.countryOfOrigin || "Unknown"}`
 
       div.style.color = "black"
       div.style.padding = "2px"
@@ -53,15 +55,16 @@ async function createLoadingElem() {
 }
 
 async function getCOO() {
+
   // get all asins from the page
   const asins = [
     ...new Set(Array.from(document.querySelectorAll("[data-asin]"))
     .map(asin => asin.attributes[0])
     .map(asinData => asinData?.value || "")
-    .filter(asinFilt => /^(?:\d{10}|[A-Z]{10}|[\dA-Z]{10})$/.test(asinFilt)))
+    .filter(asinFilt => ASIN_REGEX.test(asinFilt)))
   ]
 
-  console.log('fetching products')
+  console.log('fetching products...')
 
   // create the loading div
   let loadingDiv = await createLoadingElem()
@@ -73,7 +76,7 @@ async function getCOO() {
     const cacheRes = sessionStorage.getItem(asin)
     
     if (cacheRes !== null) {
-      cacheResult[asin] = cacheRes
+      cacheResult[asin] = JSON.parse(cacheRes)
       return true
     }
     
@@ -83,23 +86,31 @@ async function getCOO() {
 
   // fetch non cached products
   const asinFetch = asins.filter(asin => sessionStorage.getItem(asin) === null)
-  const result = await chrome.runtime.sendMessage({ asins: asinFetch })
+  const fetchResult = await chrome.runtime.sendMessage({ asins: asinFetch })
 
   // add to page of fetched results
-  addToPage(asinFetch, result)
+  addToPage(asinFetch, fetchResult)
+
+  // send result to the popup UI
+  // chrome.runtime.sendMessage({ result: { ...fetchResult, ...cacheResult }})
 
   // remove loading div
   loadingDiv.remove();
 
   console.log('product fetching done...')
 
-  // persist to local cache
-  if (result) Object.entries(result).forEach(([asin, COO]) => sessionStorage.setItem(asin, COO))
+  // persist to local cache and background fetch event
+  if (fetchResult) {
+    Object.entries(fetchResult).forEach(
+      ([asin, product]) => sessionStorage.setItem(asin, JSON.stringify(product))
+    )
+
+    // create a background fetch event
+    chrome.runtime.sendMessage({ backgroundFetch: fetchResult })
+  }
 
 }
 
 setTimeout(function() {
-  if (document.readyState === "complete") {
-    getCOO();
-  }
+  if (document.readyState === "complete") getCOO();
 }, 2000)
