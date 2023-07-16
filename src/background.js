@@ -5,13 +5,14 @@ import { DOMParser } from '@xmldom/xmldom';
 let currURL = ''
 const URL_REGEX = /https:\/\/.*amazon(?:\.com|\.ca|\.co\.uk|\.de|\.fr|\.it|\.es|\.nl\.co\.jp|\.in|\.com\.au|\.com\.mx|\.br|\.cn|\.com\.tr|\.ae|\.sa|\.sg)\/(?:s|b|gp).*/
 const DOMAIN_COUNTRY_REGEX = /(\.com\.tr|\.com\.mx|\.com\.au|\.com|\.ca|\.co\.uk|\.de|\.fr|\.it|\.es|\.nl|\.co\.jp|\.in|\.br|\.cn|\.ae|\.sa|\.sg)/
+const ADD_PRODUCTS_FETCH_URL = "https://us-central1-americazon-extension.cloudfunctions.net/addProducts"
 
 // XPATHs
 const COO_XPATH = "//*[contains(text(), 'Country of Origin') or contains(text(), 'Country/Region of origin')]//following-sibling::*"
 const PRODUCTNAME_XPATH = "//*[@id='productTitle']"
 const IMAGE_XPATH = "//*[@id='landingImage']"
 const MANUFACTURER_XPATH = "//*[not(contains(text(), 'Recommended')) and not(contains(text(), 'recommended')) and not(contains(text(), 'discontinued')) and not(contains(text(), 'Discontinued')) and contains(text(), 'Manufacturer')]//following-sibling::*"
-const DEPARTMENT_XPATH = "//*[contains(text(), 'Department') or contains(text(), 'department')]//following-sibling::*"
+// const DEPARTMENT_XPATH = "//select[@aria-describedby='searchDropdownDescription']/option[@selected='selected']"
 
 // define XPATH Parser
 const dom_parser = new DOMParser({
@@ -26,11 +27,11 @@ const dom_parser = new DOMParser({
 const filterHTML = (str) => str.replace('\n', '').replace('&lrm;', '').replace(/[^\x00-\x7F]/g, "").trim()
 
 // parse a product page
-const parseHTML = (html) => ({ 
+const parseHTML = (html) => ({
     productName: filterHTML(xpath.select1(PRODUCTNAME_XPATH, dom_parser.parseFromString(html, "text/html"))?.firstChild?.data || ''),
     countryOfOrigin: filterHTML(xpath.select1(COO_XPATH, dom_parser.parseFromString(html, "text/html"))?.firstChild?.data || ''),
     productImage: filterHTML(xpath.select1(IMAGE_XPATH, dom_parser.parseFromString(html, "text/html"))?.attributes[1]?.nodeValue || ''),
-    department: filterHTML(xpath.select1(DEPARTMENT_XPATH, dom_parser.parseFromString(html, "text/html"))?.firstChild?.data ||  ''),
+    // department: filterHTML(xpath.select1(DEPARTMENT_XPATH, dom_parser.parseFromString(html, "text/html"))?.firstChild?.data ||  ''),
     manufacturer: filterHTML(xpath.select1(MANUFACTURER_XPATH, dom_parser.parseFromString(html, "text/html"))?.firstChild?.data ||  '')
 })
 
@@ -65,7 +66,8 @@ const fetchASIN = async (asins) => {
 
 }
 
-const backgroundPostProducts = (products) => fetch("https://us-central1-americazon-extension.cloudfunctions.net/addProducts", {
+const backgroundPostProducts = (products) => 
+  fetch(ADD_PRODUCTS_FETCH_URL, {
     method: 'POST',
     mode: 'no-cors',
     headers: {

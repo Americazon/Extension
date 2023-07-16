@@ -55,7 +55,7 @@ async function createLoadingElem() {
 }
 
 async function getCOO() {
-  
+
   // get all asins from the page
   const asins = [
     ...new Set(Array.from(document.querySelectorAll("[data-asin]"))
