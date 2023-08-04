@@ -8,3 +8,5 @@ wasm_bindgen_example/target/
 wasm_bindgen_example/pkg/
 wasm_build/
 .DS_Store
+
+package-lock.json
