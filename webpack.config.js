@@ -1,5 +1,6 @@
 const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
+const WebpackObfuscator = require('webpack-obfuscator');
 
 module.exports = {
   entry: {
@@ -12,6 +13,11 @@ module.exports = {
     filename: '[name].js'
   },
   devtool: 'cheap-module-source-map',
+  plugins: [
+    new WebpackObfuscator({
+      rotateStringArray: true
+    }, ['excluded_bundle_name.js'])
+  ],
   optimization: {
     minimize: true,
     minimizer: [
