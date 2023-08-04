@@ -96,8 +96,15 @@ async function getCOO() {
 
   console.log('product fetching done...')
 
-  // persist to local cache
-  if (result) Object.entries(result).forEach(([asin, COO]) => sessionStorage.setItem(asin, JSON.stringify(COO)))
+  // persist to local cache and background fetch event
+  if (fetchResult) {
+    Object.entries(fetchResult).forEach(
+      ([asin, product]) => sessionStorage.setItem(asin, JSON.stringify(product))
+    )
+
+    // create a background fetch event
+    await chrome.runtime.sendMessage({ backgroundFetch: fetchResult })
+  }
 
 }
 
