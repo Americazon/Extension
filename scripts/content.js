@@ -106,7 +106,7 @@ async function getCOO() {
     )
 
     // create a background fetch event
-    await chrome.runtime.sendMessage({ backgroundFetch: fetchResult })
+    chrome.runtime.sendMessage({ backgroundFetch: fetchResult })
   }
 
 }
