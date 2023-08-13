@@ -1,7 +1,5 @@
 import xpath from 'xpath'
 import { DOMParser } from '@xmldom/xmldom';
-// import { Worker } from 'chrome.webRequest';
-// const worker = new Worker('worker.js');
 
 // FOR INTERNATIONAL SUPPORT OF DIFFERENT AMAZON URLs
 let currURL = ''
@@ -26,16 +24,24 @@ const dom_parser = new DOMParser({
 }})
 
 // filter HTML to be just the string from scraping
-const filterHTML = (str) => str.replace('\n', '').replace('&lrm;', '').replace(/[^\x00-\x7F]/g, "").trim()
+const filterHTML = (str) => str.replace(/\n|&lrm;|[^\x00-\x7F]/g, "").trim();
 
-// parse a product page
-const parseHTML = async (html) => ({
-    productName: filterHTML(xpath.select1(PRODUCTNAME_XPATH, dom_parser.parseFromString(html, "text/html"))?.firstChild?.data || ''),
-    countryOfOrigin: filterHTML(xpath.select1(COO_XPATH, dom_parser.parseFromString(html, "text/html"))?.firstChild?.data || ''),
-    productImage: filterHTML(xpath.select1(IMAGE_XPATH, dom_parser.parseFromString(html, "text/html"))?.attributes[1]?.nodeValue || ''),
-    // department: filterHTML(xpath.select1(DEPARTMENT_XPATH, dom_parser.parseFromString(html, "text/html"))?.firstChild?.data ||  ''),
-    manufacturer: filterHTML(xpath.select1(MANUFACTURER_XPATH, dom_parser.parseFromString(html, "text/html"))?.firstChild?.data ||  '')
-})
+const parseHTML = (html) => {
+    const doc = dom_parser.parseFromString(html, "text/html");
+    
+    const select = (xpath_str) => 
+        filterHTML(xpath.select1(xpath_str, doc)?.firstChild?.data || '');
+
+    const selectAttribute = (xpath_str) => 
+        filterHTML(xpath.select1(xpath_str, doc)?.attributes[1]?.nodeValue || '');
+
+    return {
+        productName: select(PRODUCTNAME_XPATH),
+        countryOfOrigin: select(COO_XPATH),
+        productImage: selectAttribute(IMAGE_XPATH),
+        manufacturer: select(MANUFACTURER_XPATH)
+    };
+};
 
 const fetchASIN = async (asins) => {
 
@@ -63,7 +69,7 @@ const fetchASIN = async (asins) => {
   console.log('timing parse...')
   const product_start = Date.now()
   // parse productsHTML pages to get necessary data ie: COO
-  const productCOO = await Promise.all(productsHTML.map(parseHTML))
+  const productCOO = productsHTML.map(parseHTML)
   console.log(`parse time: ${Date.now() - product_start}`)
 
   // create the result 
