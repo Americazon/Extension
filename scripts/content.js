@@ -104,9 +104,6 @@ async function getCOO() {
     Object.entries(fetchResult).forEach(
       ([asin, product]) => sessionStorage.setItem(asin, JSON.stringify(product))
     )
-
-    // create a background fetch event
-    chrome.runtime.sendMessage({ backgroundFetch: fetchResult })
   }
 
 }

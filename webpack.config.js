@@ -2,6 +2,8 @@ const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
 const WebpackObfuscator = require('webpack-obfuscator');
 
+const isProd = process.env.PROCESS_ENV === "production"
+
 module.exports = {
   entry: {
     "content-bundle": './src/content-bundle.js',
@@ -14,9 +16,9 @@ module.exports = {
   },
   devtool: 'cheap-module-source-map',
   plugins: [
-    new WebpackObfuscator({
+    ...((isProd) ? new WebpackObfuscator({
       rotateStringArray: true
-    }, ['excluded_bundle_name.js'])
+    }, ['excluded_bundle_name.js']) : [])
   ],
   optimization: {
     minimize: true,

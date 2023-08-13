@@ -16,7 +16,6 @@ const MANUFACTURER_XPATH = "//*[not(contains(text(), 'Recommended')) and not(con
 
 // define XPATH Parser
 const dom_parser = new DOMParser({
-  locator: {},
   errorHandler: {
     warning: function (w) {},
     error: function (e) {},
@@ -24,16 +23,24 @@ const dom_parser = new DOMParser({
 }})
 
 // filter HTML to be just the string from scraping
-const filterHTML = (str) => str.replace('\n', '').replace('&lrm;', '').replace(/[^\x00-\x7F]/g, "").trim()
+const filterHTML = (str) => str.replace(/\n|&lrm;|[^\x00-\x7F]/g, "").trim();
 
-// parse a product page
-const parseHTML = (html) => ({
-    productName: filterHTML(xpath.select1(PRODUCTNAME_XPATH, dom_parser.parseFromString(html, "text/html"))?.firstChild?.data || ''),
-    countryOfOrigin: filterHTML(xpath.select1(COO_XPATH, dom_parser.parseFromString(html, "text/html"))?.firstChild?.data || ''),
-    productImage: filterHTML(xpath.select1(IMAGE_XPATH, dom_parser.parseFromString(html, "text/html"))?.attributes[1]?.nodeValue || ''),
-    // department: filterHTML(xpath.select1(DEPARTMENT_XPATH, dom_parser.parseFromString(html, "text/html"))?.firstChild?.data ||  ''),
-    manufacturer: filterHTML(xpath.select1(MANUFACTURER_XPATH, dom_parser.parseFromString(html, "text/html"))?.firstChild?.data ||  '')
-})
+const parseHTML = (html) => {
+    const doc = dom_parser.parseFromString(html, "text/html");
+    
+    const select = (xpath_str) => 
+        filterHTML(xpath.select1(xpath_str, doc)?.firstChild?.data || '');
+
+    const selectAttribute = (xpath_str) => 
+        filterHTML(xpath.select1(xpath_str, doc)?.attributes[1]?.nodeValue || '');
+
+    return {
+        productName: select(PRODUCTNAME_XPATH),
+        countryOfOrigin: select(COO_XPATH),
+        productImage: selectAttribute(IMAGE_XPATH),
+        manufacturer: select(MANUFACTURER_XPATH)
+    };
+};
 
 const fetchASIN = async (asins) => {
 
@@ -43,16 +50,26 @@ const fetchASIN = async (asins) => {
   const [ countryURL ] = (new URL(currURL).hostname).match(DOMAIN_COUNTRY_REGEX)
 
   // get the asin URLs
-  const asinURLS = asins.map(asin => `https://www.amazon${countryURL}/dp/${asin}`)
+  const asinURLS = asins.map(asin => {
+    const fetchURL = new URL(`https://www.amazon${countryURL}/dp/${asin}`);
+    // TODO: add search query params 
+    return fetchURL.toString();
+  })
 
+  console.log('timing product fetch...')
+  const parse_start = Date.now();
   // resolve them to text
   const productsHTML = await Promise.all(
     (await Promise.all(asinURLS.map((url) => fetch(url))))
       .filter(res => res.ok)
       .map((res) => res.text()))
+  console.log(`product fetch time: ${Date.now() - parse_start}`)
   
+  console.log('timing parse...')
+  const product_start = Date.now()
   // parse productsHTML pages to get necessary data ie: COO
   const productCOO = productsHTML.map(parseHTML)
+  console.log(`parse time: ${Date.now() - product_start}`)
 
   // create the result 
   const result = {}
@@ -61,12 +78,7 @@ const fetchASIN = async (asins) => {
     result[asins[i]] = productCOO[i] || {}
   }
 
-  // send response back to the content script
-  return result;
-
-}
-
-const backgroundPostProducts = (products) => 
+  // fetch for the add products
   fetch(ADD_PRODUCTS_FETCH_URL, {
     method: 'POST',
     mode: 'no-cors',
@@ -75,16 +87,19 @@ const backgroundPostProducts = (products) =>
       'Content-Type': 'application/json',
       'Accept': '*/*'
     },
-    body: JSON.stringify(Object.values(products))
+    body: JSON.stringify(Object.values(result))
   })
+
+  // send response back to the content script
+  return result;
+
+}
 
 // listener to fetch products from content script when message received
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.asins)
       fetchASIN(request.asins).then(res => sendResponse(res))
-    else if (request.backgroundFetch)
-      backgroundPostProducts(request.backgroundFetch).then(res => sendResponse(res))
     return true;
   }
 );
