@@ -1,3 +1,4 @@
+import init from './helloworld_demo.js';
 import xpath from 'xpath'
 import { DOMParser } from '@xmldom/xmldom';
 
@@ -27,7 +28,7 @@ const dom_parser = new DOMParser({
 const filterHTML = (str) => str.replace('\n', '').replace('&lrm;', '').replace(/[^\x00-\x7F]/g, "").trim()
 
 // parse a product page
-const parseHTML = (html) => ({
+const parseHTML = async (html) => ({
     productName: filterHTML(xpath.select1(PRODUCTNAME_XPATH, dom_parser.parseFromString(html, "text/html"))?.firstChild?.data || ''),
     countryOfOrigin: filterHTML(xpath.select1(COO_XPATH, dom_parser.parseFromString(html, "text/html"))?.firstChild?.data || ''),
     productImage: filterHTML(xpath.select1(IMAGE_XPATH, dom_parser.parseFromString(html, "text/html"))?.attributes[1]?.nodeValue || ''),
@@ -67,16 +68,29 @@ const fetchASIN = async (asins) => {
 }
 
 const backgroundPostProducts = (products) => 
-  fetch(ADD_PRODUCTS_FETCH_URL, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Content-Type': 'application/json',
-      'Accept': '*/*'
-    },
-    body: JSON.stringify(Object.values(products))
-  })
+fetch(ADD_PRODUCTS_FETCH_URL, {
+  method: 'POST',
+  mode: 'no-cors',
+  headers: {
+    'Access-Control-Allow-Origin': '*',
+    'Content-Type': 'application/json',
+    'Accept': '*/*'
+  },
+  body: JSON.stringify(Object.values(products))
+})
+
+// async function runDemo() {
+//   // Initialize the WASM module
+//   await init();
+
+//   // Call the exported functions from the WASM module
+//   // print();
+//   // print_with_value('John');
+// }
+
+// chrome.runtime.onInstalled.addListener(() => {
+//   runDemo();
+// });
 
 // listener to fetch products from content script when message received
 chrome.runtime.onMessage.addListener(

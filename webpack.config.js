@@ -2,11 +2,36 @@ const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
 const WebpackObfuscator = require('webpack-obfuscator');
 
+const isProd = process.env.NODE_ENV === "production"
+
 module.exports = {
+    module: {
+      rules: [
+          // ... other rules ...
+          {
+            test: /\.tsx?$/,
+            use: 'ts-loader',
+            exclude: /node_modules/
+          },
+          {
+              test: /\.wasm$/,
+              type: 'javascript/auto', // This is important!
+              use: [
+                  {
+                      loader: 'wasm-loader'
+                  }
+              ],
+              exclude: /node_modules/
+          }
+      ]
+  },
+  experiments: {
+    asyncWebAssembly: true
+  },
   entry: {
     "content-bundle": './src/content-bundle.js',
     background: './src/background.js',
-    popup: './src/popup.js'
+    popup: './src/popup.js',
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -14,9 +39,9 @@ module.exports = {
   },
   devtool: 'cheap-module-source-map',
   plugins: [
-    new WebpackObfuscator({
+    ...((isProd) ?  new WebpackObfuscator({
       rotateStringArray: true
-    }, ['excluded_bundle_name.js'])
+    }, ['excluded_bundle_name.js']) : [])
   ],
   optimization: {
     minimize: true,
