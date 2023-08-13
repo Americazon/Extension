@@ -1,5 +1,7 @@
 import xpath from 'xpath'
 import { DOMParser } from '@xmldom/xmldom';
+// import { Worker } from 'chrome.webRequest';
+// const worker = new Worker('worker.js');
 
 // FOR INTERNATIONAL SUPPORT OF DIFFERENT AMAZON URLs
 let currURL = ''
@@ -61,12 +63,7 @@ const fetchASIN = async (asins) => {
     result[asins[i]] = productCOO[i] || {}
   }
 
-  // send response back to the content script
-  return result;
-
-}
-
-const backgroundPostProducts = (products) => 
+  // fetch for the add products
   fetch(ADD_PRODUCTS_FETCH_URL, {
     method: 'POST',
     mode: 'no-cors',
@@ -75,16 +72,19 @@ const backgroundPostProducts = (products) =>
       'Content-Type': 'application/json',
       'Accept': '*/*'
     },
-    body: JSON.stringify(Object.values(products))
+    body: JSON.stringify(Object.values(result))
   })
+
+  // send response back to the content script
+  return result;
+
+}
 
 // listener to fetch products from content script when message received
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.asins)
       fetchASIN(request.asins).then(res => sendResponse(res))
-    else if (request.backgroundFetch)
-      backgroundPostProducts(request.backgroundFetch).then(res => sendResponse(res))
     return true;
   }
 );
