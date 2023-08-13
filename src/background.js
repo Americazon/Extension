@@ -27,7 +27,7 @@ const dom_parser = new DOMParser({
 const filterHTML = (str) => str.replace('\n', '').replace('&lrm;', '').replace(/[^\x00-\x7F]/g, "").trim()
 
 // parse a product page
-const parseHTML = (html) => ({
+const parseHTML = async (html) => ({
     productName: filterHTML(xpath.select1(PRODUCTNAME_XPATH, dom_parser.parseFromString(html, "text/html"))?.firstChild?.data || ''),
     countryOfOrigin: filterHTML(xpath.select1(COO_XPATH, dom_parser.parseFromString(html, "text/html"))?.firstChild?.data || ''),
     productImage: filterHTML(xpath.select1(IMAGE_XPATH, dom_parser.parseFromString(html, "text/html"))?.attributes[1]?.nodeValue || ''),
@@ -43,16 +43,26 @@ const fetchASIN = async (asins) => {
   const [ countryURL ] = (new URL(currURL).hostname).match(DOMAIN_COUNTRY_REGEX)
 
   // get the asin URLs
-  const asinURLS = asins.map(asin => `https://www.amazon${countryURL}/dp/${asin}`)
+  const asinURLS = asins.map(asin => {
+    const fetchURL = new URL(`https://www.amazon${countryURL}/dp/${asin}`);
+    // TODO: add search query params 
+    return fetchURL.toString();
+  })
 
+  console.log('timing product fetch...')
+  const parse_start = Date.now();
   // resolve them to text
   const productsHTML = await Promise.all(
     (await Promise.all(asinURLS.map((url) => fetch(url))))
       .filter(res => res.ok)
       .map((res) => res.text()))
+  console.log(`product fetch time: ${Date.now() - parse_start}`)
   
+  console.log('timing parse...')
+  const product_start = Date.now()
   // parse productsHTML pages to get necessary data ie: COO
-  const productCOO = productsHTML.map(parseHTML)
+  const productCOO = await Promise.all(productsHTML.map(parseHTML))
+  console.log(`parse time: ${Date.now() - product_start}`)
 
   // create the result 
   const result = {}
