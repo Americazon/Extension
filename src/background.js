@@ -16,7 +16,6 @@ const MANUFACTURER_XPATH = "//*[not(contains(text(), 'Recommended')) and not(con
 
 // define XPATH Parser
 const dom_parser = new DOMParser({
-  locator: {},
   errorHandler: {
     warning: function (w) {},
     error: function (e) {},
