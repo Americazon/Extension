@@ -7,19 +7,21 @@ const DOMAIN_COUNTRY_REGEX = /(\.com\.tr|\.com\.mx|\.com\.au|\.com|\.ca|\.co\.uk
 
 var currURL = ''
 
-const fetchASIN = async (asins) => {
+async function fetchASIN(asins) {
 
   if (!asins.length) return;
 
   // get country url for international support
   const [ countryURL ] = (new URL(currURL).hostname).match(DOMAIN_COUNTRY_REGEX)
 
+  // get cached products
+  const cachedProducts = await utils.getProductsFromCache(asins)
+
   // get the asin URLs
-  const asinURLS = asins.map(asin => {
-    const fetchURL = new URL(`https://www.amazon${countryURL}/dp/${asin}`);
-    // TODO: add search query params 
-    return fetchURL.toString();
-  })
+  const nonCachedAsins = asins.filter(asin => !(cachedProducts[asin]))
+  const asinURLS = asins
+    .filter(asin => !(cachedProducts?.[asin]))
+    .map(asin => `https://www.amazon${countryURL}/dp/${asin}`);
 
   console.log('timing product fetch...')
   const parse_start = Date.now();
@@ -37,11 +39,15 @@ const fetchASIN = async (asins) => {
   console.log(`parse time: ${Date.now() - product_start}`)
 
   // create the result 
-  const result = {}
-  for (let i = 0; i < asins.length; i++) {
+  const result = { ...cachedProducts }
+  for (let i = 0; i < nonCachedAsins.length; i++) {
     productCOO[i]["ASIN"] = asins[i]
     result[asins[i]] = productCOO[i] || {}
   }
+
+  // save products to database
+  utils.saveProductsToCache(result)
+  utils.saveProductsToDB(result)
 
   // send response back to the content script
   return result;
@@ -51,7 +57,6 @@ const fetchASIN = async (asins) => {
 // listener to fetch products from content script when message received
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    console.log(currURL)
     if (request.asins)
       fetchASIN(request.asins).then(res => sendResponse(res))
     return true;
@@ -77,18 +82,3 @@ chrome.tabs.onUpdated.addListener(
     }
   }
 );
-
-// adds products 
-chrome.tabs.onRemoved.addListener(
-  function(tabId, removedInfo) {
-
-    console.log(removedInfo)
-
-    if (URL_REGEX.test(currURL))
-    {
-      console.log("closing...")
-      chrome.scripting.executeScript({
-        files: ["addProducts-bundle.js"]
-      })
-    }
-})

@@ -8,6 +8,9 @@ const IMAGE_XPATH = "//*[@id='landingImage']"
 const MANUFACTURER_XPATH = "//*[not(contains(text(), 'Recommended')) and not(contains(text(), 'recommended')) and not(contains(text(), 'discontinued')) and not(contains(text(), 'Discontinued')) and contains(text(), 'Manufacturer')]//following-sibling::*"
 // const DEPARTMENT_XPATH = "//select[@aria-describedby='searchDropdownDescription']/option[@selected='selected']"
 
+// endpoint to add products
+const ADD_PRODUCTS_FETCH_URL = "https://us-central1-americazon-extension.cloudfunctions.net/addProducts"
+
 // define XPATH Parser
 const dom_parser = new DOMParser({
 errorHandler: {
@@ -36,8 +39,35 @@ const parseHTML = (html) => {
   };
 };
 
+export function saveProductsToDB(result) {
+  // fetch for the add products
+  fetch(ADD_PRODUCTS_FETCH_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Content-Type': 'application/json',
+      'Accept': '*/*'
+    },
+    body: JSON.stringify(Object.values(result))
+  })
+}
 
+export async function saveProductsToCache(result) {
+  
+  Promise.all(Object.entries(result).map(([key, product]) => {
+    chrome.storage.session.set({ [key] : product })
+  }))
+}
+
+export async function getProductsFromCache(asins) {
+  const result = await chrome.storage.session.get(asins)
+  return result;
+}
 
 export default {
-  parseHTML 
+  parseHTML,
+  saveProductsToDB,
+  saveProductsToCache,
+  getProductsFromCache,
 }

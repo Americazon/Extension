@@ -121,7 +121,5 @@ async function getCOO() {
 
 
 setTimeout(function() {
-  if (document.readyState === "complete") 
-    getCOO();
-
+  if (document.readyState === "complete") getCOO();
 }, 2000)
