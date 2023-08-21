@@ -1,4 +1,4 @@
-const ASIN_REGEX = /^(?:\d{10}|[A-Z]{10}|[\dA-Z]{10})$/
+export const ASIN_REGEX = /^(?:\d{10}|[A-Z]{10}|[\dA-Z]{10})$/
 
 async function addToPage(asins, result={}) {
   // add COO to the UI
@@ -119,8 +119,7 @@ async function getCOO() {
 
 }
 
-setTimeout(function() {
-  if (document.readyState === "complete") 
-    getCOO();
 
+setTimeout(function() {
+  if (document.readyState === "complete") getCOO();
 }, 2000)
