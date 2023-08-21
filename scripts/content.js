@@ -1,4 +1,4 @@
-const ASIN_REGEX = /^(?:\d{10}|[A-Z]{10}|[\dA-Z]{10})$/
+export const ASIN_REGEX = /^(?:\d{10}|[A-Z]{10}|[\dA-Z]{10})$/
 
 async function addToPage(asins, result={}) {
   // add COO to the UI
@@ -6,7 +6,8 @@ async function addToPage(asins, result={}) {
     let productElem = document.querySelector(`[data-asin='${asins[i]}']`)
     if (productElem) {
       let div = document.createElement('div');
-      div.textContent = `Country of Origin: ${result[asins[i]]?.countryOfOrigin || "Unknown"}`
+      let resultCOO = `${result[asins[i]]?.countryOfOrigin || "Unknown"}`
+      div.textContent = `Country of Origin: ${resultCOO}`
 
       div.style.color = "black"
       div.style.padding = "2px"
@@ -22,6 +23,16 @@ async function addToPage(asins, result={}) {
       productElem.style.height = "90%"
 
       productElem.appendChild(div)
+
+      // add affiliate links
+      let links = productElem.querySelectorAll("a[href]")
+      links.forEach(link => {
+        let url = new URL(link.href);
+        if (resultCOO != "Unknown") {
+          url.searchParams.set('tag', 'americazon0b-20');
+        }
+        link.href = url.href;
+      });
     }
   }
 }
@@ -107,6 +118,7 @@ async function getCOO() {
   }
 
 }
+
 
 setTimeout(function() {
   if (document.readyState === "complete") getCOO();
