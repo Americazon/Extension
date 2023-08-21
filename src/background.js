@@ -1,3 +1,4 @@
+import init, { print, print_with_value } from '../wasm/pkg/helloworld_demo.js';
 import utils from "./utils";
 
 const URL_REGEX = /https:\/\/.*amazon(?:\.com|\.ca|\.co\.uk|\.de|\.fr|\.it|\.es|\.nl\.co\.jp|\.in|\.com\.au|\.com\.mx|\.br|\.cn|\.com\.tr|\.ae|\.sa|\.sg)\/(?:s|b|gp).*/
@@ -80,5 +81,20 @@ chrome.tabs.onUpdated.addListener(
         files: ["content-bundle.js"]
       })
     }
+  }
+);
+
+
+chrome.runtime.onInstalled.addListener(
+  function() {
+    // Initialize the WASM module
+    init().then(() => {
+      // Call the exported functions from the WASM module
+      print();
+      print_with_value('Austin');
+    });
+
+
+    return true
   }
 );

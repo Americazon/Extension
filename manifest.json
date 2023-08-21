@@ -6,7 +6,7 @@
   "minimum_chrome_version": "93",
   "background": {
     "service_worker": "background.js",
-    "serviceWorker": true
+    "type": "module"
   },
   "icons": {
     "16": "America16.png",
@@ -65,5 +65,10 @@
   ],
   "action": {
     "default_popup": "popup.html"
+  },
+  "content_security_policy": {
+    "default-src": "self 'wasm-unsafe-eval' *",
+    "connect-src": "self 'wasm-unsafe-eval' *",
+    "script-src": "self 'wasm-unsafe-eval' *"
   }
 }

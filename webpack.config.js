@@ -5,6 +5,21 @@ const WebpackObfuscator = require('webpack-obfuscator');
 const isProd = process.env.NODE_ENV === "production"
 
 module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.ts$/,
+        loader: 'ts-loader',
+        options: {
+            configFile: 'tsconfig.json',
+        },
+      },
+      {
+          test: /\.wasm$/,
+          loader: 'wasm-loader'
+      },
+    ]
+  },
   entry: {
     "content-bundle": './src/content-bundle.js',
     background: './src/background.js',
