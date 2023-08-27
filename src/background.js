@@ -94,7 +94,6 @@ chrome.runtime.onInstalled.addListener(
       print_with_value('Austin');
     });
 
-
     return true
   }
 );

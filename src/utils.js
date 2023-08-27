@@ -54,7 +54,6 @@ export function saveProductsToDB(result) {
 }
 
 export async function saveProductsToCache(result) {
-  
   Promise.all(Object.entries(result).map(([key, product]) => {
     chrome.storage.session.set({ [key] : product })
   }))

@@ -32,9 +32,9 @@ module.exports = {
   },
   devtool: 'cheap-module-source-map',
   plugins: [
-    // new WebpackObfuscator({
+    // ...((isProd) ? new WebpackObfuscator({
     //   rotateStringArray: true
-    // }, ['excluded_bundle_name.js'])
+    // }, ['excluded_bundle_name.js']) : {})
   ],
   optimization: {
     minimize: true,
