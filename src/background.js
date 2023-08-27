@@ -87,13 +87,7 @@ chrome.tabs.onUpdated.addListener(
 
 chrome.runtime.onInstalled.addListener(
   function() {
-    // Initialize the WASM module
-    init().then(() => {
-      // Call the exported functions from the WASM module
-      print();
-      print_with_value('Austin');
-    });
-
+    init().then(() => { console.log("WASM INITED")})
     return true
   }
 );

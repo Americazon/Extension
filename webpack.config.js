@@ -1,6 +1,7 @@
 const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
 const WebpackObfuscator = require('webpack-obfuscator');
+const WasmPackPlugin = require('@wasm-tool/wasm-pack-plugin')
 
 const isProd = process.env.NODE_ENV === "production"
 
@@ -24,7 +25,8 @@ module.exports = {
     "content-bundle": './src/content-bundle.js',
     background: './src/background.js',
     popup: './src/popup.js',
-    utils: './src/utils.js'
+    utils: './src/utils.js',
+    "helloworld_demo": './wasm/pkg/helloworld_demo.js'
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -34,7 +36,10 @@ module.exports = {
   plugins: [
     // ...((isProd) ? new WebpackObfuscator({
     //   rotateStringArray: true
-    // }, ['excluded_bundle_name.js']) : {})
+    // }, ['excluded_bundle_name.js']) : {}),
+    // new WasmPackPlugin({
+    //   crateDirectory: path.resolve(__dirname, 'wasm')
+    // })
   ],
   optimization: {
     minimize: true,
