@@ -4,23 +4,30 @@ function addAffiliateDisclosure(productElement)
 {
   let infoIcon = document.createElement('i');
   infoIcon.id = "id-affiliate-disclosure"
-  infoIcon.style.fontSize = "12px"
+  infoIcon.style.fontSize = "16px"
   infoIcon.style.paddingLeft = "4px"
   infoIcon.style.position = "float:right"
+  // info icon unicode char
   infoIcon.innerText = "\u24D8"
 
   let affiliateTextHeader = document.createElement('h3')
   affiliateTextHeader.innerText = "As an Amazon Associate I earn from qualifying purchases."
   affiliateTextHeader.style.color = "black"
-  affiliateTextHeader.style.fontSize = "12px"
+  affiliateTextHeader.style.fontSize = "10px"
   affiliateTextHeader.style.visibility = "hidden"
+  affiliateTextHeader.style.padding = "2px"
 
   let affiliateDisclosureDiv = document.createElement('div')
   affiliateDisclosureDiv.appendChild(affiliateTextHeader);
   affiliateDisclosureDiv.style.visibility = "hidden"
   affiliateDisclosureDiv.style.width = "120px"
   affiliateDisclosureDiv.style.position = "absolute"
+  affiliateDisclosureDiv.style.display = "inline-block"
   affiliateDisclosureDiv.style.zIndex = "9999"
+  affiliateDisclosureDiv.style.border = "2px solid black"
+  affiliateDisclosureDiv.style.borderRadius = "4px"
+  affiliateDisclosureDiv.style.backgroundColor = "white"
+  affiliateDisclosureDiv.style.boxShadow = "2px 2px"
 
   infoIcon.addEventListener('mouseenter', (e) => {
     e.stopPropagation()
@@ -68,7 +75,7 @@ async function addToPage(asins, result={}) {
       let links = productElem.querySelectorAll("a[href]")
       links.forEach(link => {
         let url = new URL(link.href);
-        if (resultCOO != "Unknown") {
+        if (resultCOO !== "Unknown") {
           url.searchParams.set('tag', 'americazon0b-20');
         }
         link.href = url.href;
