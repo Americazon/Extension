@@ -1,28 +1,68 @@
 export const ASIN_REGEX = /^(?:\d{10}|[A-Z]{10}|[\dA-Z]{10})$/
 
+function addAffiliateDisclosure(productElement)
+{
+  let infoIcon = document.createElement('i');
+  infoIcon.id = "id-affiliate-disclosure"
+  infoIcon.style.fontSize = "12px"
+  infoIcon.style.paddingLeft = "4px"
+  infoIcon.style.position = "float:right"
+  infoIcon.innerText = "\u24D8"
+
+  let affiliateTextHeader = document.createElement('h3')
+  affiliateTextHeader.innerText = "As an Amazon Associate I earn from qualifying purchases."
+  affiliateTextHeader.style.color = "black"
+  affiliateTextHeader.style.fontSize = "12px"
+  affiliateTextHeader.style.visibility = "hidden"
+
+  let affiliateDisclosureDiv = document.createElement('div')
+  affiliateDisclosureDiv.appendChild(affiliateTextHeader);
+  affiliateDisclosureDiv.style.visibility = "hidden"
+  affiliateDisclosureDiv.style.width = "120px"
+  affiliateDisclosureDiv.style.position = "absolute"
+  affiliateDisclosureDiv.style.zIndex = "9999"
+
+  infoIcon.addEventListener('mouseenter', (e) => {
+    e.stopPropagation()
+    affiliateDisclosureDiv.style.visibility = "visible"
+    affiliateTextHeader.style.visibility = "visible"
+  })
+
+  infoIcon.addEventListener('mouseleave', (e) => {
+    e.stopPropagation()
+    affiliateDisclosureDiv.style.visibility = "hidden"
+    affiliateTextHeader.style.visibility = "hidden"
+  })
+  
+  infoIcon.appendChild(affiliateDisclosureDiv);
+
+  productElement.appendChild(infoIcon);
+}
+
 async function addToPage(asins, result={}) {
   // add COO to the UI
   for (let i = 0; i < asins.length; i++) {
     let productElem = document.querySelector(`[data-asin='${asins[i]}']`)
     if (productElem) {
-      let div = document.createElement('div');
+      let COOTextElem = document.createElement('div');
       let resultCOO = `${result[asins[i]]?.countryOfOrigin || "Unknown"}`
-      div.textContent = `Country of Origin: ${resultCOO}`
+      COOTextElem.textContent = `Country of Origin: ${resultCOO}`
 
-      div.style.color = "black"
-      div.style.padding = "2px"
-      div.style.borderRadius = "5px"
-      div.style.background = "#febd69"
-      div.style.borderWidth = "5px"
-      div.style.borderColor = "grey"
-      div.style.maxWidth = "90%"
-      div.style.marginLeft = "5px"
+      COOTextElem.style.color = "black"
+      COOTextElem.style.padding = "2px"
+      COOTextElem.style.borderRadius = "5px"
+      COOTextElem.style.background = "#febd69"
+      COOTextElem.style.borderWidth = "5px"
+      COOTextElem.style.borderColor = "grey"
+      COOTextElem.style.maxWidth = "90%"
+      COOTextElem.style.marginLeft = "5px"
 
       productElem.style.marginBottom = "50px"
 
       productElem.style.height = "90%"
 
-      productElem.appendChild(div)
+      // append the COOText to the productElem
+      productElem.appendChild(COOTextElem)
 
       // add affiliate links
       let links = productElem.querySelectorAll("a[href]")
@@ -33,6 +73,12 @@ async function addToPage(asins, result={}) {
         }
         link.href = url.href;
       });
+
+      // create affiliate disclosure if a country of origin was provided
+      if (resultCOO !== "Unknown") {
+        addAffiliateDisclosure(COOTextElem);
+      }
+
     }
   }
 }
